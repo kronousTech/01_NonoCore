@@ -17,8 +17,8 @@ namespace KronosTech.Levels
             var gridScreenWidth = (transform as RectTransform).rect.width;
             var gridScreenHeight = (transform as RectTransform).rect.height;
 
-            var xSize = LevelBuildSettings.SelectedLevel.GetLength(0);
-            var ySize = LevelBuildSettings.SelectedLevel.GetLength(1);
+            var xSize = LevelBuildSettings.SelectedLevel.GetLength(1);
+            var ySize = LevelBuildSettings.SelectedLevel.GetLength(0);
             var size = gridScreenWidth / (xSize + 1);
             var startX = -(gridScreenWidth / 2f);
             var startY = gridScreenHeight / 2f;

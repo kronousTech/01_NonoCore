@@ -4,9 +4,10 @@ namespace KronosTech.Levels
     {
         public static LevelGridSquareType[,] SelectedLevel =
         {
-            {LevelGridSquareType.Blank, LevelGridSquareType.Point, LevelGridSquareType.Blank },
-            {LevelGridSquareType.Blocked, LevelGridSquareType.Point, LevelGridSquareType.Multiplier },
-            {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point }
+            {LevelGridSquareType.Blank, LevelGridSquareType.Point, LevelGridSquareType.Blank, LevelGridSquareType.Blank  },
+            {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Multiplier, LevelGridSquareType.Multiplier  },
+            {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  },
+            {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  }
         };
 
 
@@ -18,6 +19,7 @@ namespace KronosTech.Levels
         public static int GetColumnValueCount(int index)
         {
             var total = 0;
+            var multiplier = 1;
 
             for (int i = 0; i < SelectedLevel.GetLength(0); i++)
             {
@@ -26,14 +28,18 @@ namespace KronosTech.Levels
                     case LevelGridSquareType.Point:
                         total++;
                         break;
+                    case LevelGridSquareType.Multiplier:
+                        multiplier *= 2;
+                        break;
                 }
             }
 
-            return total;
+            return total * multiplier;
         }
         public static int GetRowValueCount(int index)
         {
             var total = 0;
+            var multiplier = 1;
 
             for (int i = 0; i < SelectedLevel.GetLength(1); i++)
             {
@@ -42,10 +48,13 @@ namespace KronosTech.Levels
                     case LevelGridSquareType.Point:
                         total++;
                         break;
+                    case LevelGridSquareType.Multiplier:
+                        multiplier *= 2;
+                        break;
                 }
             }
 
-            return total;
+            return total * multiplier;
         }
     }
 }
