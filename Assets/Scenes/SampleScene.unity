@@ -511,8 +511,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91730967e447c9740a9d3c251e945da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _squarePrefab: {fileID: 2818693815617696007, guid: 2e4c19424eb55064786002caebad147d, type: 3}
-  _counterPrefab: {fileID: 2818693815617696007, guid: 3c91fca144a1f3a4f94e0066fb3bdcda, type: 3}
+  _squarePrefab: {fileID: 5087579234430592947, guid: 2e4c19424eb55064786002caebad147d, type: 3}
+  _counterPrefab: {fileID: -9118322720911263575, guid: 3c91fca144a1f3a4f94e0066fb3bdcda, type: 3}
 --- !u!114 &1626222092
 MonoBehaviour:
   m_ObjectHideFlags: 0
