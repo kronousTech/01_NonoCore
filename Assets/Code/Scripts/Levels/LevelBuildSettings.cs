@@ -6,7 +6,7 @@ namespace KronosTech.Levels
         {
             {LevelGridSquareType.Blank, LevelGridSquareType.Point, LevelGridSquareType.Blank, LevelGridSquareType.Blank  },
             {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Multiplier, LevelGridSquareType.Multiplier  },
-            {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  },
+            {LevelGridSquareType.Blocked, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  },
             {LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  }
         };
 
