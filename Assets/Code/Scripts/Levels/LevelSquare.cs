@@ -13,7 +13,9 @@ namespace KronosTech.Levels
         private LevelGridSquareType _currentSquareType;
 
         [HideInInspector] public UnityEvent<LevelGridSquareType, Vector2, Vector2> OnInitialize = new();
-        [HideInInspector] public UnityEvent<LevelGridSquareType, Vector2> OnInteract = new();
+        [HideInInspector] public UnityEvent<LevelGridSquareType> OnInteract = new();
+
+        public static UnityEvent OnCheckForGameEnd = new();
 
         private void OnDisable()
         {
@@ -26,7 +28,7 @@ namespace KronosTech.Levels
 
         public void Initialize(int x, int y, int maxX, int maxY)
         {
-            _selectedLevelSquareType = LevelBuildSettings.GetSquareType(x, y);
+            _selectedLevelSquareType = LevelStateController.GetSelectedLevelSquare(x, y);
             _position = new Vector2(x, y);
 
             _currentSquareType = 
@@ -39,7 +41,7 @@ namespace KronosTech.Levels
             OnInitialize?.Invoke(_selectedLevelSquareType, _position, new Vector2(maxX, maxY));
         }
 
-        public void AddButtonListener(LevelGridSquareType type)
+        private void AddButtonListener(LevelGridSquareType type)
         {
             if(type == LevelGridSquareType.Blank || type == LevelGridSquareType.Point)
             {
@@ -64,7 +66,15 @@ namespace KronosTech.Levels
                 _currentSquareType = LevelGridSquareType.Point;
             }
 
-            OnInteract?.Invoke(_currentSquareType, _position);
+            OnInteract?.Invoke(_currentSquareType);
+
+
+            OnCheckForGameEnd?.Invoke();
+        }
+
+        public LevelGridSquareType GetCurrentType()
+        {
+            return _currentSquareType;
         }
     }
 }

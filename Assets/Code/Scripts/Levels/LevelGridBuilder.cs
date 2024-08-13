@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace KronosTech.Levels
 {
@@ -12,13 +13,15 @@ namespace KronosTech.Levels
         private LevelSquareCounter[] _rowCounters;
         private LevelSquare[,] _squares;
 
+        public static UnityEvent<LevelSquare[,], LevelSquareCounter[], LevelSquareCounter[]> OnLevelGridBuilt = new();
+
         private void Start()
         {
             var gridScreenWidth = (transform as RectTransform).rect.width;
             var gridScreenHeight = (transform as RectTransform).rect.height;
 
-            var xSize = LevelBuildSettings.SelectedLevel.GetLength(1);
-            var ySize = LevelBuildSettings.SelectedLevel.GetLength(0);
+            var xSize = LevelStateController.GetLevelSizeX();
+            var ySize = LevelStateController.GetLevelSizeY();
             var size = gridScreenWidth / (xSize + 1);
             var startX = -(gridScreenWidth / 2f);
             var startY = gridScreenHeight / 2f;
@@ -38,10 +41,10 @@ namespace KronosTech.Levels
                 for (int y = 0; y < ySize; y++)
                 {
                     // Add square
-                    _squares[x,y] = Instantiate(_squarePrefab, Vector2.zero, Quaternion.identity, transform);
-                    _squares[x,y].Initialize(x, y, xSize, ySize);
-                    _squares[x,y].GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
-                    _squares[x,y].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (size * (x + 1)), startY - (size * (y + 1)));
+                    _squares[x, y] = Instantiate(_squarePrefab, Vector2.zero, Quaternion.identity, transform);
+                    _squares[x, y].Initialize(x, y, xSize, ySize);
+                    _squares[x, y].GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
+                    _squares[x, y].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (size * (x + 1)), startY - (size * (y + 1)));
 
                     if(x == 0)
                     {
@@ -53,6 +56,8 @@ namespace KronosTech.Levels
                     }
                 }
             }
+
+            OnLevelGridBuilt?.Invoke(_squares, _columnCounters, _rowCounters);
         }
     }
 }

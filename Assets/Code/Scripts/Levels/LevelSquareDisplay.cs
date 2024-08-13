@@ -32,7 +32,7 @@ namespace KronosTech.Levels
 
         private void Initialize(LevelGridSquareType type, Vector2 position, Vector2 size)
         {
-            _display.text = Debug.isDebugBuild ? type.ToString() : string.Empty;
+            //_display.text = Debug.isDebugBuild ? type.ToString() : string.Empty;
             transform.name = "Square: " + position.x + "-" + position.y;
             _pointDisplay.sprite = LevelSpriteManager.GetSquarePoint();
             _pointDisplay.enabled = false;
@@ -41,7 +41,7 @@ namespace KronosTech.Levels
             _foregroundDisplay.color = _foregroundDisplay.sprite == null ? Color.clear : Color.white;
             _frameDisplay.sprite = LevelSpriteManager.GetSquareFrame(position, (int)size.x, (int)size.y);
         }
-        private void OnInteract(LevelGridSquareType type, Vector2 position)
+        private void OnInteract(LevelGridSquareType type)
         {
             _pointDisplay.enabled = type == LevelGridSquareType.Point;
         }
