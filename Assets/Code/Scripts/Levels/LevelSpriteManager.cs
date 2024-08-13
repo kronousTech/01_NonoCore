@@ -1,7 +1,4 @@
 using KronosTech.Levels;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.U2D;
 using UnityEngine;
 
 public class LevelSpriteManager : MonoBehaviour
@@ -26,6 +23,10 @@ public class LevelSpriteManager : MonoBehaviour
     public static Sprite GetSquareBackground()
     {
         return Sprites[2];
+    }
+    public static Sprite GetSquarePoint()
+    {
+        return Sprites[3];
     }
     public static Sprite GetCounterFrame(LevelSquareCounterType type, int index, int maxSize)
     {
@@ -62,15 +63,15 @@ public class LevelSpriteManager : MonoBehaviour
                 return null;
         }
     }
-    public static Sprite GetSquareFrame(int x, int y, int maxX, int maxY)
+    public static Sprite GetSquareFrame(Vector2 position, int maxX, int maxY)
     {
-        if(y == 0)
+        if(position.y == 0)
         {
-            if(x == 0)
+            if(position.x == 0)
             {
                 return Sprites[11];
             }
-            else if(x == maxX - 1)
+            else if(position.x == maxX - 1)
             {
                 return Sprites[13];
             }
@@ -79,13 +80,13 @@ public class LevelSpriteManager : MonoBehaviour
                 return Sprites[12];
             }
         }
-        else if(y == maxY - 1)
+        else if(position.y == maxY - 1)
         {
-            if (x == 0)
+            if (position.x == 0)
             {
                 return Sprites[21];
             }
-            else if (x == maxX - 1)
+            else if (position.x == maxX - 1)
             {
                 return Sprites[23];
             }
@@ -96,11 +97,11 @@ public class LevelSpriteManager : MonoBehaviour
         }
         else
         {
-            if (x == 0)
+            if (position.x == 0)
             {
                 return Sprites[16];
             }
-            else if (x == maxX - 1)
+            else if (position.x == maxX - 1)
             {
                 return Sprites[18];
             }

@@ -1,28 +1,70 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace KronosTech.Levels
 {
     public class LevelSquare : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] private Image _backgroundDisplay;
-        [SerializeField] private Image _foregroundDisplay;
-        [SerializeField] private Image _frameDisplay;
-        [SerializeField] private TextMeshProUGUI _display;
+        private Vector2 _position;
+        private Button _button;
+
+        private LevelGridSquareType _selectedLevelSquareType;
+        private LevelGridSquareType _currentSquareType;
+
+        [HideInInspector] public UnityEvent<LevelGridSquareType, Vector2, Vector2> OnInitialize = new();
+        [HideInInspector] public UnityEvent<LevelGridSquareType, Vector2> OnInteract = new();
+
+        private void OnDisable()
+        {
+            RemoveButtonListener(_selectedLevelSquareType);
+        }
+        private void Awake()
+        {
+            _button = GetComponent<Button>();
+        }
 
         public void Initialize(int x, int y, int maxX, int maxY)
         {
-            var type = LevelBuildSettings.GetSquareType(x, y);
-            _display.text = type.ToString();
+            _selectedLevelSquareType = LevelBuildSettings.GetSquareType(x, y);
+            _position = new Vector2(x, y);
 
-            transform.name = "Square: " + x + "-" + y;
+            _currentSquareType = 
+                _selectedLevelSquareType == LevelGridSquareType.Point || _selectedLevelSquareType == LevelGridSquareType.Blank 
+                ? LevelGridSquareType.Blank 
+                : _selectedLevelSquareType;
 
-            _backgroundDisplay.sprite = LevelSpriteManager.GetSquareBackground();
-            _foregroundDisplay.sprite = LevelSpriteManager.GetSquareForeground(type);
-            _foregroundDisplay.color = _foregroundDisplay.sprite == null ? Color.clear : Color.white;
-            _frameDisplay.sprite = LevelSpriteManager.GetSquareFrame(x, y, maxX, maxY);
+            AddButtonListener(_selectedLevelSquareType);
+
+            OnInitialize?.Invoke(_selectedLevelSquareType, _position, new Vector2(maxX, maxY));
+        }
+
+        public void AddButtonListener(LevelGridSquareType type)
+        {
+            if(type == LevelGridSquareType.Blank || type == LevelGridSquareType.Point)
+            {
+                _button.onClick.AddListener(OnButtonClick);
+            }
+        }
+        private void RemoveButtonListener(LevelGridSquareType type)
+        {
+            if (type == LevelGridSquareType.Blank || type == LevelGridSquareType.Point)
+            {
+                _button.onClick.RemoveListener(OnButtonClick);
+            }
+        }
+        private void OnButtonClick()
+        {
+            if (_currentSquareType == LevelGridSquareType.Point)
+            {
+                _currentSquareType = LevelGridSquareType.Blank;
+            }
+            else if(_currentSquareType == LevelGridSquareType.Blank)    
+            {
+                _currentSquareType = LevelGridSquareType.Point;
+            }
+
+            OnInteract?.Invoke(_currentSquareType, _position);
         }
     }
 }
