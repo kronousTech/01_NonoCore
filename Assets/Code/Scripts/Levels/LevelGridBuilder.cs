@@ -31,7 +31,7 @@ namespace KronosTech.Levels
             {
                 // Add columns counter
                 _columnCounters[x] = Instantiate(_counterPrefab, Vector2.zero, Quaternion.identity, transform);
-                _columnCounters[x].Initialize(LevelSquareCounterType.Column, x);
+                _columnCounters[x].Initialize(LevelSquareCounterType.Column, x, xSize);
                 _columnCounters[x].GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
                 _columnCounters[x].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (size * (x + 1)), startY);
 
@@ -39,8 +39,7 @@ namespace KronosTech.Levels
                 {
                     // Add square
                     _squares[x,y] = Instantiate(_squarePrefab, Vector2.zero, Quaternion.identity, transform);
-                    _squares[x,y].Initialize(x, y);
-                    _squares[x,y].name = "Square: " + x + "-" + y;
+                    _squares[x,y].Initialize(x, y, xSize, ySize);
                     _squares[x,y].GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
                     _squares[x,y].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (size * (x + 1)), startY - (size * (y + 1)));
 
@@ -48,7 +47,7 @@ namespace KronosTech.Levels
                     {
                         // Add row counters
                         _rowCounters[y] = Instantiate(_counterPrefab, Vector2.zero, Quaternion.identity, transform);
-                        _rowCounters[y].Initialize(LevelSquareCounterType.Row, y);
+                        _rowCounters[y].Initialize(LevelSquareCounterType.Row, y, ySize);
                         _rowCounters[y].GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
                         _rowCounters[y].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (size * x), startY - (size * (y + 1)));
                     }

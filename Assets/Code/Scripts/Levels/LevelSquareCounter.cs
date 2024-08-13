@@ -13,7 +13,7 @@ namespace KronosTech.Levels
             _display = GetComponent<LevelSquareCounterDisplay>();
         }
 
-        public void Initialize(LevelSquareCounterType type, int index)
+        public void Initialize(LevelSquareCounterType type, int index, int maxSize)
         {
             transform.name = type.ToString() + " counter - " + index.ToString();
 
@@ -29,7 +29,7 @@ namespace KronosTech.Levels
                     break;
             }
 
-            _display.Initialize(_totalValue);
+            _display.Initialize(type, _totalValue, index, maxSize);
         }
     }
 }
