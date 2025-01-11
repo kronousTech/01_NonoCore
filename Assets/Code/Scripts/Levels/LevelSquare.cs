@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -16,8 +17,8 @@ namespace KronosTech.Levels
             set => _currentValue = (sbyte)((value + 5) % 5);
         }
 
-        [HideInInspector] public UnityEvent<sbyte, Vector2, Vector2> OnInitialize = new();
-        [HideInInspector] public UnityEvent<sbyte> OnInteract = new();
+        public event Action<sbyte, Vector2, Vector2> OnInitialize;
+        public event Action<sbyte> OnInteract;
 
         private void OnEnable()
         {

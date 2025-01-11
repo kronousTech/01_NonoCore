@@ -57,11 +57,11 @@ namespace KronosTech.Levels
             {
                 if(_type == LevelSquareCounterType.Column)
                 {
-                    squares[i, _index].OnInteract.AddListener(CalculateCurrentTotal);
+                    squares[i, _index].OnInteract += CalculateCurrentTotal;
                 }
                 else
                 {
-                    squares[_index, i].OnInteract.AddListener(CalculateCurrentTotal);
+                    squares[_index, i].OnInteract += CalculateCurrentTotal;
                 }
             }
         }
