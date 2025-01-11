@@ -44,9 +44,13 @@ namespace KronosTech.Levels
         }
         private static void AddCheckForGameEnd(LevelSquare[,] squares, LevelSquareCounter[] columns, LevelSquareCounter[] rows)
         {
-            foreach (var square in squares)
+            foreach (var column in columns)
             {
-                square.OnInteract.AddListener((s) => CheckForGameEnd());
+                column.OnValueCheck += (s) => CheckForGameEnd();
+            }
+            foreach (var row in rows)
+            {
+                row.OnValueCheck += (s) => CheckForGameEnd();
             }
         }
         private static void CheckForGameEnd()
