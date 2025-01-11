@@ -17,13 +17,13 @@ namespace KronosTech.Levels
 
         private void OnEnable()
         {
-            _square.OnInitialize.AddListener(Initialize);
-            _square.OnInteract.AddListener(OnInteract);
+            _square.OnInitialize += Initialize;
+            _square.OnInteract += OnInteract;
         }
         private void OnDisable()
         {
-            _square.OnInitialize.RemoveListener(Initialize);
-            _square.OnInteract.RemoveListener(OnInteract);
+            _square.OnInitialize -= Initialize;
+            _square.OnInteract -= OnInteract;
         }
         private void Awake()
         {
