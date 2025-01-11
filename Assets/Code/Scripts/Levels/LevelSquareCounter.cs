@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace KronosTech.Levels
 {
@@ -13,7 +13,7 @@ namespace KronosTech.Levels
         private int _targetValue;
         private int _currentValue;
 
-        [HideInInspector] public UnityEvent<bool> OnValueCheck = new();
+        public event Action<bool> OnValueCheck;
 
         private void OnEnable()
         {
@@ -57,19 +57,19 @@ namespace KronosTech.Levels
             {
                 if(_type == LevelSquareCounterType.Column)
                 {
-                    squares[_index, i].OnInteract.AddListener(CalculateCurrentTotal);
+                    squares[i, _index].OnInteract.AddListener(CalculateCurrentTotal);
                 }
                 else
                 {
-                    squares[i, _index].OnInteract.AddListener(CalculateCurrentTotal);
+                    squares[_index, i].OnInteract.AddListener(CalculateCurrentTotal);
                 }
             }
         }
-        private void CalculateCurrentTotal(LevelGridSquareType type)
+        private void CalculateCurrentTotal(sbyte type)
         {
             _currentValue = _type == LevelSquareCounterType.Column 
-                ? LevelStateController.GetColumnValueCount(_index) 
-                : LevelStateController.GetRowValueCount(_index);
+                ? LevelStateController.GetCurrentColumnValue(_index) 
+                : LevelStateController.GetCurrentRowValue(_index);
 
             Debug.Log(_type.ToString() + "-" + _index.ToString() + "-" + MatchesTargetValue());
 

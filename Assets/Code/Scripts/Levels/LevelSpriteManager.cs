@@ -12,21 +12,22 @@ public class LevelSpriteManager : MonoBehaviour
         Sprites = _sprite;
     }
 
-    public static Sprite GetBackground()
+    public static Sprite GetCounterBackground(bool complete)
     {
-        return Sprites[0];
-    }
-    public static Sprite GetCounterBackground()
-    {
-        return Sprites[1];
+        return complete ? Sprites[2] : Sprites[1];
     }
     public static Sprite GetSquareBackground()
     {
-        return Sprites[2];
+        return Sprites[0];
     }
-    public static Sprite GetSquarePoint()
+    public static Sprite GetSquarePoint(sbyte value)
     {
-        return Sprites[3];
+        if(value == -1)
+        {
+            return Sprites[3];
+        }
+
+        return Sprites[5 + value];
     }
     public static Sprite GetCounterFrame(LevelSquareCounterType type, int index, int maxSize)
     {
@@ -35,28 +36,28 @@ public class LevelSpriteManager : MonoBehaviour
             case LevelSquareCounterType.Column:
                 if(index == 0)
                 {
-                    return Sprites[7];
+                    return Sprites[13];
                 }
                 else if(index == maxSize-1)
                 {
-                    return Sprites[9];
+                    return Sprites[15];
                 }
                 else
                 {
-                    return Sprites[8];
+                    return Sprites[14];
                 }
             case LevelSquareCounterType.Row:
                 if (index == 0)
                 {
-                    return Sprites[10];
+                    return Sprites[18];
                 }
                 else if (index == maxSize-1)
                 {
-                    return Sprites[20];
+                    return Sprites[30];
                 }
                 else
                 {
-                    return Sprites[15];
+                    return Sprites[24];
                 }
             default:
                 Debug.LogError("LevelSpriteManager.cs: Invalid Square counter type: " + type);
@@ -69,56 +70,46 @@ public class LevelSpriteManager : MonoBehaviour
         {
             if(position.x == 0)
             {
-                return Sprites[11];
+                return Sprites[19];
             }
             else if(position.x == maxX - 1)
             {
-                return Sprites[13];
+                return Sprites[21];
             }
             else
             {
-                return Sprites[12];
+                return Sprites[20];
             }
         }
         else if(position.y == maxY - 1)
         {
             if (position.x == 0)
             {
-                return Sprites[21];
+                return Sprites[25];
             }
             else if (position.x == maxX - 1)
             {
-                return Sprites[23];
+                return Sprites[27];
             }
             else
             {
-                return Sprites[22];
+                return Sprites[26];
             }
         }
         else
         {
             if (position.x == 0)
             {
-                return Sprites[16];
+                return Sprites[31];
             }
             else if (position.x == maxX - 1)
             {
-                return Sprites[18];
+                return Sprites[33];
             }
             else
             {
-                return Sprites[17];
+                return Sprites[32];
             }
         }
-    }
-
-    public static Sprite GetSquareForeground(LevelGridSquareType type)
-    {
-        return type switch
-        {
-            LevelGridSquareType.Blocked => Sprites[5],
-            LevelGridSquareType.Multiplier => Sprites[6],
-            _ => null,
-        };
     }
 }

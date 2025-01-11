@@ -6,11 +6,8 @@ namespace KronosTech.Levels
 {
     public static class LevelStateController
     {
-        private static LevelGridSquareType[,] SelectedLevel;
+        private static sbyte[,] SelectedLevel;
 
-        // Multipliers
-        private static int[] ColumnMultipliers;
-        private static int[] RowMultipliers;
         // Values
         private static int[] ColumnTotals; // MAYBE NOT NECESSARY, SPECIALLY IF ONLY CALLED ONCE PER LEVEL
         private static int[] RowTotals;
@@ -24,22 +21,19 @@ namespace KronosTech.Levels
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            SelectedLevel = new LevelGridSquareType[,]
+            SelectedLevel = new sbyte[,]
             {
-                { LevelGridSquareType.Blank, LevelGridSquareType.Multiplier, LevelGridSquareType.Blank, LevelGridSquareType.Blank  },
-                { LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Multiplier, LevelGridSquareType.Multiplier  },
-                { LevelGridSquareType.Blocked, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  },
-                { LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Point, LevelGridSquareType.Blank  }
+                { +0, +0, -1, +0  },
+                { +1, +2, +0, +0  },
+                { -1, +1, +4, +3  },
+                { +0, +1, +2, +0  }
             };
-            // ADD TO ON LEVEL SELECT
-            ColumnMultipliers = GetSelectedLevelColumnsMultiplier();
-            RowMultipliers = GetSelectedLevelRowsMultiplier();
 
             ColumnTotals = GetSelectedLevelColumnsValue();
             RowTotals = GetSelectedLevelRowsValue();
 
             LevelGridBuilder.OnLevelGridBuilt.AddListener(AddLevelElements);
-            LevelSquare.OnCheckForGameEnd.AddListener(CheckForGameEnd);
+            LevelGridBuilder.OnLevelGridBuilt.AddListener(AddCheckForGameEnd);
         }
 
         private static void AddLevelElements(LevelSquare[,] squares, LevelSquareCounter[] columns, LevelSquareCounter[] rows)
@@ -47,6 +41,13 @@ namespace KronosTech.Levels
             LevelSquares = squares;
             CounterColumns = columns;
             CounterRows = rows;
+        }
+        private static void AddCheckForGameEnd(LevelSquare[,] squares, LevelSquareCounter[] columns, LevelSquareCounter[] rows)
+        {
+            foreach (var square in squares)
+            {
+                square.OnInteract.AddListener((s) => CheckForGameEnd());
+            }
         }
         private static void CheckForGameEnd()
         {
@@ -71,52 +72,6 @@ namespace KronosTech.Levels
             OnGameEnd?.Invoke();
         }
 
-        #region Multipliers
-        private static int[] GetSelectedLevelRowsMultiplier()
-        {
-            var multipliers = new int[GetLevelSizeY()];
-
-            for (int y = 0; y < GetLevelSizeY(); y++)
-            {
-                var multiplierValue = 1;
-
-                for (int x = 0; x < GetLevelSizeX(); x++)
-                {
-                    if (GetSelectedLevelSquare(x,y) == LevelGridSquareType.Multiplier)
-                    {
-                        multiplierValue *= 2;
-                    }
-                }
-
-                multipliers[y] = multiplierValue;
-            }
-            
-
-            return multipliers;
-        }
-        private static int[] GetSelectedLevelColumnsMultiplier()
-        {
-            var multipliers = new int[GetLevelSizeX()];
-
-            for (int x = 0; x < GetLevelSizeX(); x++)
-            {
-                var multiplierValue = 1;
-
-                for (int y = 0; y < GetLevelSizeY(); y++)
-                {
-                    if (GetSelectedLevelSquare(x, y) == LevelGridSquareType.Multiplier)
-                    {
-                        multiplierValue *= 2;
-                    }
-                }
-
-                multipliers[x] = multiplierValue;
-            }
-
-            return multipliers;
-        }
-        #endregion
-
         #region Values
         public static int GetColumnAnswerValue(int index)
         {
@@ -126,63 +81,59 @@ namespace KronosTech.Levels
         {
             return RowTotals[index];
         }
-        public static int GetColumnValueCount(int index)
+
+        public static int GetCurrentColumnValue(int index)
         {
             var total = 0;
 
             for (int y = 0; y < GetLevelSizeY(); y++)
             {
-                if (LevelSquares[index, y].GetCurrentType() == LevelGridSquareType.Point)
-                {
-                    total += 1 * RowMultipliers[y];
-                }
+                total += LevelSquares[y, index].GetValue();
             }
 
-            return total * ColumnMultipliers[index];
+            return total;
         }
-        private static int GetColumnValueCount(int index, LevelGridSquareType[,] squares)
+        public static int GetCurrentRowValue(int index)
+        {
+            var total = 0;
+
+            for (int x = 0; x < GetLevelSizeX(); x++)
+            {
+                 total += LevelSquares[index, x].GetValue();
+            }
+
+            return total;
+        }
+
+        private static int GetColumnValueCount(int index, sbyte[,] squares)
         {
             var total = 0;
 
             for (int y = 0; y < GetLevelSizeY(); y++)
             {
                 // Inverted x and y
-                if (GetSelectedLevelSquare(index, y) == LevelGridSquareType.Point)
+                if (squares[y, index] != -1)
                 {
-                    total += 1 * RowMultipliers[y];
+                    total += squares[y, index];
                 }
             }
 
-            return total * ColumnMultipliers[index];
+            return total;
         }
-        public static int GetRowValueCount(int index)
-        {
-            var total = 0;
-
-            for (int x = 0; x < GetLevelSizeX(); x++)
-            {
-                if (LevelSquares[x, index].GetCurrentType() == LevelGridSquareType.Point)
-                {
-                    total += 1 * ColumnMultipliers[x];
-                }
-            }
-
-            return total * RowMultipliers[index];
-        }
-        private static int GetRowValueCount(int index, LevelGridSquareType[,] squares)
+        private static int GetRowValueCount(int index, sbyte[,] squares)
         {
             var total = 0;
 
             for (int x = 0; x < GetLevelSizeX(); x++)
             {
                 // Inverted x and y
-                if (GetSelectedLevelSquare(x, index) == LevelGridSquareType.Point)
+                if (squares[index, x] != -1)
                 {
-                    total += 1 * ColumnMultipliers[x];
+                    total += squares[index, x];
                 }
             }
 
-            return total * RowMultipliers[index];
+            return total;
         }
         private static int[] GetSelectedLevelRowsValue()
         {
@@ -217,7 +168,7 @@ namespace KronosTech.Levels
         {
             return SelectedLevel.GetLength(0);
         }
-        public static LevelGridSquareType GetSelectedLevelSquare(int x, int y)
+        public static sbyte GetSelectedLevelSquare(int x, int y)
         {
             return SelectedLevel[y, x];
         }

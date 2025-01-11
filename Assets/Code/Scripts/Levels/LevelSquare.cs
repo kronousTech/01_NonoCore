@@ -9,17 +9,23 @@ namespace KronosTech.Levels
         private Vector2 _position;
         private Button _button;
 
-        private LevelGridSquareType _selectedLevelSquareType;
-        private LevelGridSquareType _currentSquareType;
+        private sbyte _currentValue;
+        private sbyte CurrentValue
+        {
+            get => _currentValue;
+            set => _currentValue = (sbyte)((value + 5) % 5);
+        }
 
-        [HideInInspector] public UnityEvent<LevelGridSquareType, Vector2, Vector2> OnInitialize = new();
-        [HideInInspector] public UnityEvent<LevelGridSquareType> OnInteract = new();
+        [HideInInspector] public UnityEvent<sbyte, Vector2, Vector2> OnInitialize = new();
+        [HideInInspector] public UnityEvent<sbyte> OnInteract = new();
 
-        public static UnityEvent OnCheckForGameEnd = new();
-
+        private void OnEnable()
+        {
+            _button.onClick.AddListener(OnButtonClick);
+        }
         private void OnDisable()
         {
-            RemoveButtonListener(_selectedLevelSquareType);
+            _button.onClick.RemoveListener(OnButtonClick);
         }
         private void Awake()
         {
@@ -28,53 +34,32 @@ namespace KronosTech.Levels
 
         public void Initialize(int x, int y, int maxX, int maxY)
         {
-            _selectedLevelSquareType = LevelStateController.GetSelectedLevelSquare(x, y);
             _position = new Vector2(x, y);
 
-            _currentSquareType = 
-                _selectedLevelSquareType == LevelGridSquareType.Point || _selectedLevelSquareType == LevelGridSquareType.Blank 
-                ? LevelGridSquareType.Blank 
-                : _selectedLevelSquareType;
-
-            AddButtonListener(_selectedLevelSquareType);
-
-            OnInitialize?.Invoke(_selectedLevelSquareType, _position, new Vector2(maxX, maxY));
-        }
-
-        private void AddButtonListener(LevelGridSquareType type)
-        {
-            if(type == LevelGridSquareType.Blank || type == LevelGridSquareType.Point)
+            if(LevelStateController.GetSelectedLevelSquare(x, y) == -1)
             {
-                _button.onClick.AddListener(OnButtonClick);
+                _currentValue = -1;
+                _button.interactable = false;
             }
-        }
-        private void RemoveButtonListener(LevelGridSquareType type)
-        {
-            if (type == LevelGridSquareType.Blank || type == LevelGridSquareType.Point)
+            else
             {
-                _button.onClick.RemoveListener(OnButtonClick);
+                _button.interactable = true;
+                CurrentValue = 0;
             }
+
+            OnInitialize?.Invoke(_currentValue, _position, new Vector2(maxX, maxY));
         }
+
         private void OnButtonClick()
         {
-            if (_currentSquareType == LevelGridSquareType.Point)
-            {
-                _currentSquareType = LevelGridSquareType.Blank;
-            }
-            else if(_currentSquareType == LevelGridSquareType.Blank)    
-            {
-                _currentSquareType = LevelGridSquareType.Point;
-            }
+            CurrentValue++;
 
-            OnInteract?.Invoke(_currentSquareType);
-
-
-            OnCheckForGameEnd?.Invoke();
+            OnInteract?.Invoke(CurrentValue);
         }
 
-        public LevelGridSquareType GetCurrentType()
-        {
-            return _currentSquareType;
+        public sbyte GetValue()
+        { 
+            return (sbyte)(CurrentValue == -1 ? 0 : CurrentValue);
         }
     }
 }

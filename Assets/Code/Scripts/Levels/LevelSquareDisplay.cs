@@ -30,20 +30,17 @@ namespace KronosTech.Levels
             _square = GetComponent<LevelSquare>();
         }
 
-        private void Initialize(LevelGridSquareType type, Vector2 position, Vector2 size)
+        private void Initialize(sbyte value, Vector2 position, Vector2 size)
         {
             //_display.text = Debug.isDebugBuild ? type.ToString() : string.Empty;
             transform.name = "Square: " + position.x + "-" + position.y;
-            _pointDisplay.sprite = LevelSpriteManager.GetSquarePoint();
-            _pointDisplay.enabled = false;
+            _pointDisplay.sprite = LevelSpriteManager.GetSquarePoint(value);
             _backgroundDisplay.sprite = LevelSpriteManager.GetSquareBackground();
-            _foregroundDisplay.sprite = LevelSpriteManager.GetSquareForeground(type);
-            _foregroundDisplay.color = _foregroundDisplay.sprite == null ? Color.clear : Color.white;
             _frameDisplay.sprite = LevelSpriteManager.GetSquareFrame(position, (int)size.x, (int)size.y);
         }
-        private void OnInteract(LevelGridSquareType type)
+        private void OnInteract(sbyte value)
         {
-            _pointDisplay.enabled = type == LevelGridSquareType.Point;
+            _pointDisplay.sprite = LevelSpriteManager.GetSquarePoint(value);
         }
     }
 }
