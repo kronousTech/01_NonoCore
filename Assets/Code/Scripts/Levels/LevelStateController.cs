@@ -23,10 +23,10 @@ namespace KronosTech.Levels
         {
             SelectedLevel = new sbyte[,]
             {
-                { +0, +0, -1, +0  },
-                { +1, +2, +0, +0  },
-                { -1, +1, +4, +3  },
-                { +0, +1, +2, +0  }
+                { +0, +0, -1, +0 },
+                { +1, +2, +0, +0 },
+                { -1, +1, +4, +3 },
+                { +0, +1, +2, +0 }
             };
 
             ColumnTotals = GetSelectedLevelColumnsValue();

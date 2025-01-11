@@ -59,5 +59,7 @@ namespace KronosTech.Levels
 
             OnLevelGridBuilt?.Invoke(_squares, _columnCounters, _rowCounters);
         }
+
+        public LevelSquare[,] GetSquares() => _squares;
     }
 }

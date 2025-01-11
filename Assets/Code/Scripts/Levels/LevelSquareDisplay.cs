@@ -38,7 +38,7 @@ namespace KronosTech.Levels
             _backgroundDisplay.sprite = LevelSpriteManager.GetSquareBackground();
             _frameDisplay.sprite = LevelSpriteManager.GetSquareFrame(position, (int)size.x, (int)size.y);
         }
-        private void OnInteract(sbyte value)
+        private void OnInteract(sbyte value, bool forced)
         {
             _pointDisplay.sprite = LevelSpriteManager.GetSquarePoint(value);
         }
