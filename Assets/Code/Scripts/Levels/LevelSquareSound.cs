@@ -22,8 +22,13 @@ namespace KronosTech.Levels
             _square = GetComponent<LevelSquare>();
         }
 
-        private void PlaySound(sbyte value)
+        private void PlaySound(sbyte value, bool forced)
         {
+            if (forced)
+            {
+                return;
+            }
+
             _source.pitch = value == 0 ? 0.5f : (0.75f + 0.25f * value);
             _source.Play();
         }

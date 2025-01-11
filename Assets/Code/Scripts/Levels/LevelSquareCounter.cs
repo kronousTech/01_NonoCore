@@ -65,7 +65,7 @@ namespace KronosTech.Levels
                 }
             }
         }
-        private void CalculateCurrentTotal(sbyte type)
+        private void CalculateCurrentTotal(sbyte type, bool forced)
         {
             _currentValue = _type == LevelSquareCounterType.Column 
                 ? LevelStateController.GetCurrentColumnValue(_index) 

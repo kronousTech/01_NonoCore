@@ -18,7 +18,7 @@ namespace KronosTech.Levels
         }
 
         public event Action<sbyte, Vector2, Vector2> OnInitialize;
-        public event Action<sbyte> OnInteract;
+        public event Action<sbyte, bool> OnInteract;
 
         private void OnEnable()
         {
@@ -55,12 +55,20 @@ namespace KronosTech.Levels
         {
             CurrentValue++;
 
-            OnInteract?.Invoke(CurrentValue);
+            OnInteract?.Invoke(CurrentValue, false);
         }
 
         public sbyte GetValue()
         { 
             return (sbyte)(CurrentValue == -1 ? 0 : CurrentValue);
+        }
+        public void ResetValue()
+        {
+            if(CurrentValue != -1)
+            {
+                CurrentValue = 0;
+                OnInteract?.Invoke(CurrentValue, true);
+            }
         }
     }
 }
