@@ -7,25 +7,28 @@ namespace KronosTech.Levels
     {
         [Header("References")]
         [SerializeField] private LevelGridBuilder _builder;
-
-        private Button _button;
+        [SerializeField] private Button m_button;
 
         private void OnEnable()
         {
-            _button.onClick.AddListener(ResetValues);
+            _builder.OnLevelGridBuilt += OnLevelGridBuiltCallback;
         }
         private void OnDisable()
         {
-            _button.onClick.RemoveListener(ResetValues);
+            _builder.OnLevelGridBuilt -= OnLevelGridBuiltCallback;
         }
-        private void Awake()
+        private void OnDestroy()
         {
-            _button = GetComponent<Button>();
+            m_button.onClick.RemoveAllListeners();
         }
 
-        private void ResetValues()
+        private void OnLevelGridBuiltCallback(LevelGridBuilderEventArgs args)
         {
-            foreach (LevelSquare square in _builder.GetSquares())
+            m_button.onClick.AddListener(() => ResetValues(args));
+        }
+        private void ResetValues(LevelGridBuilderEventArgs args)
+        {
+            foreach (LevelSquare square in args.Squares)
             {
                 square.ResetValue();
             }

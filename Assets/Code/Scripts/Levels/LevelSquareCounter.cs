@@ -5,80 +5,48 @@ namespace KronosTech.Levels
 {
     public class LevelSquareCounter : MonoBehaviour
     {
-        private LevelSquareCounterDisplay _display;
+        [Header("Debug")]
+        [SerializeField] private int m_targetValue;
+        [SerializeField] private int m_currentValue;
 
-        private LevelSquareCounterType _type;
-        private int _index;
-        private int _maxSize;
-        private int _targetValue;
-        private int _currentValue;
-
+        public event Action<LevelSquareCounterEventArgs> OnInitialized;
         public event Action<bool> OnValueCheck;
 
-        private void OnEnable()
+        public void Initialize(LevelSquare[] squaresToCount, int target)
         {
-            LevelGridBuilder.OnLevelGridBuilt.AddListener(AddListenerToSquares);
-        }
-        private void OnDisable()
-        {
-            LevelGridBuilder.OnLevelGridBuilt.RemoveListener(AddListenerToSquares);
-        }
-        private void Awake()
-        {
-            _display = GetComponent<LevelSquareCounterDisplay>();
-        }
+            m_targetValue = target;
+            RefreshCurrentValue(squaresToCount);
 
-        public void Initialize(LevelSquareCounterType type, int index, int maxSize)
-        {
-            transform.name = type.ToString() + " counter - " + index.ToString();
-
-            _type = type;
-            _index = index;
-            _maxSize = maxSize;
-
-            switch (type)
+            foreach (LevelSquare square in squaresToCount)
             {
-                case LevelSquareCounterType.Column:
-                    _targetValue = LevelStateController.GetColumnAnswerValue(index);
-                    break;
-                case LevelSquareCounterType.Row:
-                    _targetValue = LevelStateController.GetRowAnswerValue(index);
-                    break;
-                default:
-                    break;
+                square.OnInteract += (value, forced) => OnSquareInteractCallback(squaresToCount);
             }
 
-            _display.Initialize(type, _targetValue, index, maxSize);
-        }
-
-        private void AddListenerToSquares(LevelSquare[,] squares, LevelSquareCounter[] columns, LevelSquareCounter[] rows)
-        {
-            for (int i = 0; i < _maxSize; i++)
-            {
-                if(_type == LevelSquareCounterType.Column)
-                {
-                    squares[i, _index].OnInteract += CalculateCurrentTotal;
-                }
-                else
-                {
-                    squares[_index, i].OnInteract += CalculateCurrentTotal;
-                }
-            }
-        }
-        private void CalculateCurrentTotal(sbyte type, bool forced)
-        {
-            _currentValue = _type == LevelSquareCounterType.Column 
-                ? LevelStateController.GetCurrentColumnValue(_index) 
-                : LevelStateController.GetCurrentRowValue(_index);
-
-            Debug.Log(_type.ToString() + "-" + _index.ToString() + "-" + MatchesTargetValue());
-
-            OnValueCheck?.Invoke(MatchesTargetValue());
+            OnInitialized?.Invoke(new LevelSquareCounterEventArgs(target));
         }
 
         public bool MatchesTargetValue()
         {
-            return _targetValue == _currentValue;
+            return m_currentValue == m_targetValue;
+        }
+
+        private void OnSquareInteractCallback(LevelSquare[] squaresToCount)
+        {
+            RefreshCurrentValue(squaresToCount);
+
+            OnValueCheck?.Invoke(MatchesTargetValue());
+        }
+        private void RefreshCurrentValue(LevelSquare[] squaresToCount)
+        {
+            m_currentValue = 0;
+
+            foreach (var square in squaresToCount)
+            {
+                if(square.TryGetValue(out var value))
+                {
+                    m_currentValue += value;
+                }
+            }
         }
     }
 }

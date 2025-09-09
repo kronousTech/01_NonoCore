@@ -87,6 +87,8 @@ GameObject:
   - component: {fileID: 6664735582067459250}
   - component: {fileID: -9118322720911263575}
   - component: {fileID: 2689921735402226860}
+  - component: {fileID: 7376285639644283171}
+  - component: {fileID: 4104122651863678454}
   m_Layer: 5
   m_Name: default_counterSquare
   m_TagString: Untagged
@@ -136,6 +138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca94f4b17fc1e894281e440a90594eb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_targetValue: 0
+  m_currentValue: 0
 --- !u!114 &2689921735402226860
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,9 +152,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19024e335e4f97146b14630b66a91ecb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _backgroundDisplay: {fileID: 4540094083734382756}
+  m_squareCounter: {fileID: -9118322720911263575}
   _textDisplay: {fileID: 5796299010554191370}
-  _frameDisplay: {fileID: 2949549078645488785}
+--- !u!114 &7376285639644283171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818693815617696007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd54e235e5686e47bc5bbfff9d1aa67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_image: {fileID: 4540094083734382756}
+--- !u!114 &4104122651863678454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818693815617696007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85f97ecb43a45514db85942893f99f27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_image: {fileID: 2949549078645488785}
 --- !u!1 &5351530092918483801
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,10 +347,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 36
+  m_fontSize: 80
+  m_fontSizeBase: 80
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 60
   m_fontStyle: 0

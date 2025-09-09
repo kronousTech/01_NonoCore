@@ -1,16 +1,18 @@
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace KronosTech.Levels
 {
     public class LevelSquare : MonoBehaviour
     {
-        private Vector2 _position;
-        private Button _button;
+        [Header("References")]
+        [SerializeField] private RectTransform m_rectTransform;
+        [SerializeField] private Button m_button;
+        [Header("Debug")]
+        [SerializeField] private sbyte _currentValue;
+        [SerializeField] private Vector2 _position;
 
-        private sbyte _currentValue;
         private sbyte CurrentValue
         {
             get => _currentValue;
@@ -22,45 +24,53 @@ namespace KronosTech.Levels
 
         private void OnEnable()
         {
-            _button.onClick.AddListener(OnButtonClick);
+            m_button.onClick.AddListener(OnButtonClickCallback);
         }
         private void OnDisable()
         {
-            _button.onClick.RemoveListener(OnButtonClick);
-        }
-        private void Awake()
-        {
-            _button = GetComponent<Button>();
+            m_button.onClick.RemoveListener(OnButtonClickCallback);
         }
 
-        public void Initialize(int x, int y, int maxX, int maxY)
+        public void Initialize(int x, int y, sbyte value, int maxX, int maxY)
         {
             _position = new Vector2(x, y);
+            transform.name = "Square: " + _position.x + "-" + _position.y;
 
-            if(LevelStateController.GetSelectedLevelSquare(x, y) == -1)
+            if(value >= 0)
             {
-                _currentValue = -1;
-                _button.interactable = false;
+                CurrentValue = 0;
             }
             else
             {
-                _button.interactable = true;
-                CurrentValue = 0;
+                _currentValue = -1;
             }
+
+            m_button.interactable = value >= 0;
 
             OnInitialize?.Invoke(_currentValue, _position, new Vector2(maxX, maxY));
         }
 
-        private void OnButtonClick()
+        private void OnButtonClickCallback()
         {
             CurrentValue++;
 
             OnInteract?.Invoke(CurrentValue, false);
         }
 
-        public sbyte GetValue()
+        public bool TryGetValue(out sbyte value)
         { 
-            return (sbyte)(CurrentValue == -1 ? 0 : CurrentValue);
+            if(CurrentValue == -1)
+            {
+                value = 0;
+
+                return false;
+            }
+            else
+            {
+                value = CurrentValue;
+
+                return true;
+            }
         }
         public void ResetValue()
         {
