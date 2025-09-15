@@ -42,7 +42,7 @@ namespace KronosTech.Levels
                 for (int y = 0; y < gridSizeY; y++)
                 {
                     squares[y, x] = Instantiate(m_squarePrefab, Vector2.zero, Quaternion.identity, m_parent);
-                    squares[y, x].Initialize(x, y, data.GetValue(x, y), gridSizeX, gridSizeY);
+                    squares[y, x].Initialize(data.GetValue(x, y), data.MaxPointsPerSquare);
                     squares[y, x].GetComponent<RectTransform>().sizeDelta = elementSizeDelta;
                     squares[y, x].GetComponent<RectTransform>().anchoredPosition = new Vector2(startX + (elementSize * (x + 1)), startY - (elementSize * (y + 1)));
                 }

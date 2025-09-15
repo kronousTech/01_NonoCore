@@ -1,180 +1,181 @@
-using KronosTech.Levels;
-using KronosTech.Levels.Skins;
 using UnityEngine;
 
-public class SkinApplier : MonoBehaviour
+namespace KronosTech.Levels.Skins
 {
-    [Header("Settings")]
-    [SerializeField] private Sprite[] m_sprites;
-    [Header("References")]
-    [SerializeField] private LevelGridBuilder m_gridBuilder;
-
-    private delegate Sprite GetFrameMethod(int index, int maxSize);
-
-    private void OnEnable()
+    public class SkinApplier : MonoBehaviour
     {
-        m_gridBuilder.OnLevelGridBuilt += OnLevelGridBuiltCallback;
-    }
-    private void OnDisable()
-    {
-        m_gridBuilder.OnLevelGridBuilt -= OnLevelGridBuiltCallback;
-    }
-    private void OnLevelGridBuiltCallback(LevelGridBuilderEventArgs args)
-    {
-        GetFrameMethod getFrameDelegate = GetColumnCountersFrame;
-        AddCountersSkin(args.ColumnCounters, getFrameDelegate);
+        [Header("Settings")]
+        [SerializeField] private Sprite[] m_sprites;
+        [Header("References")]
+        [SerializeField] private LevelGridBuilder m_gridBuilder;
 
-        getFrameDelegate = GetRowCountersFrame;
-        AddCountersSkin(args.RowCounters, getFrameDelegate);
+        private delegate Sprite GetFrameMethod(int index, int maxSize);
 
-        SkinElementBackground background;
-        SkinElementFrame frame;
-        Vector2 position;
-
-        for (int x = 0; x < args.Squares.GetLength(1); x++)
+        private void OnEnable()
         {
-            for (int y = 0; y < args.Squares.GetLength(0); y++)
+            m_gridBuilder.OnLevelGridBuilt += OnLevelGridBuiltCallback;
+        }
+        private void OnDisable()
+        {
+            m_gridBuilder.OnLevelGridBuilt -= OnLevelGridBuiltCallback;
+        }
+        private void OnLevelGridBuiltCallback(LevelGridBuilderEventArgs args)
+        {
+            GetFrameMethod getFrameDelegate = GetColumnCountersFrame;
+            AddCountersSkin(args.ColumnCounters, getFrameDelegate);
+
+            getFrameDelegate = GetRowCountersFrame;
+            AddCountersSkin(args.RowCounters, getFrameDelegate);
+
+            SkinElementBackground background;
+            SkinElementFrame frame;
+            Vector2 position;
+
+            for (int x = 0; x < args.Squares.GetLength(1); x++)
             {
-                background = args.Squares[x, y].GetComponent<SkinElementBackground>();
-                background.SetImageSprite(GetSquareBackground());
+                for (int y = 0; y < args.Squares.GetLength(0); y++)
+                {
+                    background = args.Squares[x, y].GetComponent<SkinElementBackground>();
+                    background.SetImageSprite(GetSquareBackground());
 
-                position.x = x;
-                position.y = y;
-                frame = args.Squares[x, y].GetComponent<SkinElementFrame>();
-                frame.SetImageSprite(GetSquareFrame(position, args.Squares.GetLength(1), args.Squares.GetLength(0)));
+                    position.x = x;
+                    position.y = y;
+                    frame = args.Squares[x, y].GetComponent<SkinElementFrame>();
+                    frame.SetImageSprite(GetSquareFrame(position, args.Squares.GetLength(1), args.Squares.GetLength(0)));
 
-                int indexX = x;
-                int indexY = y;
-                SkinElementSquarePoint point;
-                LevelSquare square;
-                point = args.Squares[x, y].GetComponent<SkinElementSquarePoint>();
-                point.SetImageSprite(GetSquarePoint(args.Squares[x, y]));
-                square = args.Squares[indexX, indexY];
-                args.Squares[indexX, indexY].OnInteract += (value, forced) => OnSquareInteractCallback(square, point);
+                    int indexX = x;
+                    int indexY = y;
+                    SkinElementSquarePoint point;
+                    LevelSquare square;
+                    point = args.Squares[x, y].GetComponent<SkinElementSquarePoint>();
+                    point.SetImageSprite(GetSquarePoint(args.Squares[x, y]));
+                    square = args.Squares[indexX, indexY];
+                    args.Squares[indexX, indexY].OnInteract += (args) => OnSquareInteractCallback(square, point);
+                }
             }
         }
-    }
 
-    private void AddCountersSkin(LevelSquareCounter[] counters, GetFrameMethod getFrameDelegate)
-    {
-        SkinElementFrame frame;
+        private void AddCountersSkin(LevelSquareCounter[] counters, GetFrameMethod getFrameDelegate)
+        {
+            SkinElementFrame frame;
 
-        for (int i = 0; i < counters.Length; i++)
-        {
-            SkinElementBackground background = counters[i].GetComponent<SkinElementBackground>();
-            background.SetImageSprite(GetCounterBackground(counters[i].MatchesTargetValue()));
-
-            frame = counters[i].GetComponent<SkinElementFrame>();
-            frame.SetImageSprite(getFrameDelegate(i, counters.Length));
-
-            int index = i;
-            counters[index].OnValueCheck += (match) => OnSquareCounterValueCheck(match, background);
-        }
-    }
-    private void OnSquareCounterValueCheck(bool match, SkinElementBackground background)
-    {
-        background.SetImageSprite(GetCounterBackground(match));
-    }
-    private Sprite GetCounterBackground(bool complete)
-    {
-        return complete ? m_sprites[2] : m_sprites[1];
-    }
-    private Sprite GetColumnCountersFrame(int index, int maxSize)
-    {
-        if (index == 0)
-        {
-            return m_sprites[13];
-        }
-        else if (index == maxSize - 1)
-        {
-            return m_sprites[15];
-        }
-        else
-        {
-            return m_sprites[14];
-        }
-    }
-    private Sprite GetRowCountersFrame(int index, int maxSize)
-    {
-        if (index == 0)
-        {
-            return m_sprites[18];
-        }
-        else if (index == maxSize - 1)
-        {
-            return m_sprites[30];
-        }
-        else
-        {
-            return m_sprites[24];
-        }
-    }
-
-    private void OnSquareInteractCallback(LevelSquare square, SkinElementSquarePoint skinElement)
-    {
-        skinElement.SetImageSprite(GetSquarePoint(square));
-    }
-    public Sprite GetSquareBackground()
-    {
-        return m_sprites[0];
-    }
-    public Sprite GetSquareFrame(Vector2 position, int maxX, int maxY)
-    {
-        if(position.y == 0)
-        {
-            if(position.x == 0)
+            for (int i = 0; i < counters.Length; i++)
             {
-                return m_sprites[19];
+                SkinElementBackground background = counters[i].GetComponent<SkinElementBackground>();
+                background.SetImageSprite(GetCounterBackground(counters[i].MatchesTargetValue()));
+
+                frame = counters[i].GetComponent<SkinElementFrame>();
+                frame.SetImageSprite(getFrameDelegate(i, counters.Length));
+
+                int index = i;
+                counters[index].OnValueCheck += (match) => OnSquareCounterValueCheck(match, background);
             }
-            else if(position.x == maxX - 1)
+        }
+        private void OnSquareCounterValueCheck(bool match, SkinElementBackground background)
+        {
+            background.SetImageSprite(GetCounterBackground(match));
+        }
+        private Sprite GetCounterBackground(bool complete)
+        {
+            return complete ? m_sprites[2] : m_sprites[1];
+        }
+        private Sprite GetColumnCountersFrame(int index, int maxSize)
+        {
+            if (index == 0)
             {
-                return m_sprites[21];
+                return m_sprites[13];
+            }
+            else if (index == maxSize - 1)
+            {
+                return m_sprites[15];
             }
             else
             {
-                return m_sprites[20];
+                return m_sprites[14];
             }
         }
-        else if(position.y == maxY - 1)
+        private Sprite GetRowCountersFrame(int index, int maxSize)
         {
-            if (position.x == 0)
+            if (index == 0)
             {
-                return m_sprites[25];
+                return m_sprites[18];
             }
-            else if (position.x == maxX - 1)
+            else if (index == maxSize - 1)
             {
-                return m_sprites[27];
+                return m_sprites[30];
             }
             else
             {
-                return m_sprites[26];
+                return m_sprites[24];
             }
         }
-        else
+
+        private void OnSquareInteractCallback(LevelSquare square, SkinElementSquarePoint skinElement)
         {
-            if (position.x == 0)
+            skinElement.SetImageSprite(GetSquarePoint(square));
+        }
+        public Sprite GetSquareBackground()
+        {
+            return m_sprites[0];
+        }
+        public Sprite GetSquareFrame(Vector2 position, int maxX, int maxY)
+        {
+            if (position.y == 0)
             {
-                return m_sprites[31];
+                if (position.x == 0)
+                {
+                    return m_sprites[19];
+                }
+                else if (position.x == maxX - 1)
+                {
+                    return m_sprites[21];
+                }
+                else
+                {
+                    return m_sprites[20];
+                }
             }
-            else if (position.x == maxX - 1)
+            else if (position.y == maxY - 1)
             {
-                return m_sprites[33];
+                if (position.x == 0)
+                {
+                    return m_sprites[25];
+                }
+                else if (position.x == maxX - 1)
+                {
+                    return m_sprites[27];
+                }
+                else
+                {
+                    return m_sprites[26];
+                }
             }
             else
             {
-                return m_sprites[32];
+                if (position.x == 0)
+                {
+                    return m_sprites[31];
+                }
+                else if (position.x == maxX - 1)
+                {
+                    return m_sprites[33];
+                }
+                else
+                {
+                    return m_sprites[32];
+                }
             }
         }
-    }
-    public Sprite GetSquarePoint(LevelSquare square)
-    {
-        if(square.TryGetValue(out var value))
+        public Sprite GetSquarePoint(LevelSquare square)
         {
-            return m_sprites[5 + value];
-        }
-        else
-        {
-            return m_sprites[3];
+            if (square.TryGetValue(out var value))
+            {
+                return m_sprites[5 + value];
+            }
+            else
+            {
+                return m_sprites[3];
+            }
         }
     }
 }

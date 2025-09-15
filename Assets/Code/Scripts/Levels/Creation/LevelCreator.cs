@@ -1,56 +1,71 @@
-using KronosTech.Levels;
+using NaughtyAttributes;
 using Newtonsoft.Json;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
-public class LevelCreator : MonoBehaviour
+namespace KronosTech.Levels.Creation
 {
-    [Header("Settings")]
-    [SerializeField][Range(1, 4)] private int _difficulty;
-    [SerializeField][Range(2, 10)] private int _size;
-    [SerializeField] private int _quantity;
-    [SerializeField][Range(0, 100)] private int _blackSquaresChance;
-    [SerializeField][Range(0, 100)] private int _blankSquaresChange;
-
-    [ContextMenu("Generate")]
-    private void GenerateLevels() 
+    public class LevelCreator : MonoBehaviour
     {
-        var newLevel = new LevelData(new sbyte[_size, _size]);
-        var json = string.Empty;
+        [Header("Settings")]
+        [SerializeField][Range(1, 4)] private sbyte m_maxPointsPerSquare;
+        [SerializeField][Range(2, 10)] private int _size;
+        [SerializeField] private int m_quantity;
+        [SerializeField][Range(0, 50)] private int m_voidSquaresChance;
+        [SerializeField][Range(0, 50)] private int m_emptySquaresChange;
 
-        for (int i = 0; i < _quantity; i++) 
+        private const string k_createFolderPath = "LevelCreatorLevels";
+
+        [ContextMenu("Generate Levels"),
+            Button("Generate Levels")]
+        private void GenerateLevels()
         {
-            for(int x = 0; x < _size; x++)
+            var newLevel = new LevelData(m_maxPointsPerSquare, new sbyte[_size, _size]);
+            string json;
+            string path;
+
+            for (int i = 0; i < m_quantity; i++)
             {
-                for(int y = 0; y < _size; y++)
+                for (int x = 0; x < _size; x++)
                 {
-                    newLevel.Grid[x, y] = GetSquareValue();
+                    for (int y = 0; y < _size; y++)
+                    {
+                        newLevel.Grid[x, y] = GetSquareValue();
+                    }
                 }
+
+                json = JsonConvert.SerializeObject(newLevel, Formatting.Indented);
+                // Save to file
+                path = Path.Combine(Application.dataPath, k_createFolderPath, $"{m_maxPointsPerSquare}-{_size}-{i}.json");
+
+                File.WriteAllText(path, json);
+
+                AssetDatabase.Refresh();
+
+                EditorUtility.DisplayProgressBar("Creating level", $"Level - {i}", (float)(i + 1) / m_quantity);
             }
 
-            json = JsonConvert.SerializeObject(newLevel);
-            // Save to file
-            string path = Path.Combine(Application.dataPath, "CreatedLevels", "test-" + _difficulty + "-" + _size + "-" + i + ".json");
+            EditorUtility.DisplayDialog("Done", "All levels are created", "Ok");
 
-            File.WriteAllText(path, json);
         }
-    }
 
-    private sbyte GetSquareValue()
-    {
-        var random = Random.Range(0, 100);
+        private sbyte GetSquareValue()
+        {
+            var random = Random.Range(0, 100);
 
-        if(random < _blackSquaresChance)
-        {
-            return (sbyte)-1;
-        }
-        else if (random < _blackSquaresChance + _blankSquaresChange) 
-        {
-            return (sbyte)0;
-        }
-        else
-        {
-            return (sbyte)Random.Range(1, _difficulty);
+            if (random < m_voidSquaresChance)
+            {
+                return (sbyte)-1;
+            }
+            else if (random < m_voidSquaresChance + m_emptySquaresChange)
+            {
+                return (sbyte)0;
+            }
+            else
+            {
+                return (sbyte)Random.Range(1, m_maxPointsPerSquare+1);
+            }
         }
     }
 }

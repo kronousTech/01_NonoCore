@@ -15,11 +15,12 @@ namespace KronosTech.Levels
         public void Initialize(LevelSquare[] squaresToCount, int target)
         {
             m_targetValue = target;
+
             RefreshCurrentValue(squaresToCount);
 
             foreach (LevelSquare square in squaresToCount)
             {
-                square.OnInteract += (value, forced) => OnSquareInteractCallback(squaresToCount);
+                square.OnInteract += (args) => OnSquareInteractCallback(squaresToCount);
             }
 
             OnInitialized?.Invoke(new LevelSquareCounterEventArgs(target));

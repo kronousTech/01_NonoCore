@@ -7,6 +7,9 @@ namespace KronosTech.Levels
         [Header("References")]
         [SerializeField] private AudioSource _source;
 
+        private const float k_basePitch = 0.5f;
+        private const float k_multiplierPitch = 0.25f;
+
         private LevelSquare _square;
 
         private void OnEnable()
@@ -22,14 +25,15 @@ namespace KronosTech.Levels
             _square = GetComponent<LevelSquare>();
         }
 
-        private void PlaySound(sbyte value, bool forced)
+        private void PlaySound(LevelSquareInteractEventArgs args)
         {
-            if (forced)
+            if (args.ForcedInteract)
             {
                 return;
             }
 
-            _source.pitch = value == 0 ? 0.5f : (0.75f + 0.25f * value);
+            _source.pitch = k_basePitch + k_multiplierPitch * args.Value;
+
             _source.Play();
         }
     }

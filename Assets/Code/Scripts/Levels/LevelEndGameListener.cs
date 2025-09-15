@@ -19,16 +19,21 @@ namespace KronosTech.Levels
             m_builder.OnLevelGridBuilt -= OnLevelGridBuiltCallback;
         }
 
-        private void OnLevelGridBuiltCallback(LevelGridBuilderEventArgs args)
+        private void OnLevelGridBuiltCallback(LevelGridBuilderEventArgs gridArgs)
         {
-            foreach (var square in args.Squares)
+            foreach (var square in gridArgs.Squares)
             {
-                square.OnInteract += (value, forced) => CheckGameEndCallback(args);
+                square.OnInteract += (squareArgs) => CheckGameEndCallback(gridArgs, squareArgs);
             }
         }
-        private void CheckGameEndCallback(LevelGridBuilderEventArgs args)
+        private void CheckGameEndCallback(LevelGridBuilderEventArgs gridArgs, LevelSquareInteractEventArgs squareArgs)
         {
-            foreach (var column in args.ColumnCounters)
+            if(squareArgs.ForcedInteract)
+            {
+                return;
+            }
+
+            foreach (var column in gridArgs.ColumnCounters)
             {
                 if (!column.MatchesTargetValue())
                 {
@@ -36,7 +41,7 @@ namespace KronosTech.Levels
                 }
             }
 
-            foreach (var row in args.RowCounters)
+            foreach (var row in gridArgs.RowCounters)
             {
                 if (!row.MatchesTargetValue())
                 {

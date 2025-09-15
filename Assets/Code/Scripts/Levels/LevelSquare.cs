@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,17 +11,16 @@ namespace KronosTech.Levels
         [SerializeField] private RectTransform m_rectTransform;
         [SerializeField] private Button m_button;
         [Header("Debug")]
-        [SerializeField] private sbyte _currentValue;
-        [SerializeField] private Vector2 _position;
+        [SerializeField, ReadOnly] private sbyte m_currentValue;
+        [SerializeField, ReadOnly] private sbyte m_maxValue;
 
         private sbyte CurrentValue
         {
-            get => _currentValue;
-            set => _currentValue = (sbyte)((value + 5) % 5);
+            get => m_currentValue;
+            set => m_currentValue = (sbyte)((value + (m_maxValue+1)) % (m_maxValue + 1));
         }
 
-        public event Action<sbyte, Vector2, Vector2> OnInitialize;
-        public event Action<sbyte, bool> OnInteract;
+        public event Action<LevelSquareInteractEventArgs> OnInteract;
 
         private void OnEnable()
         {
@@ -31,30 +31,28 @@ namespace KronosTech.Levels
             m_button.onClick.RemoveListener(OnButtonClickCallback);
         }
 
-        public void Initialize(int x, int y, sbyte value, int maxX, int maxY)
+        public void Initialize(sbyte generatedAnswerValue, sbyte maxValue)
         {
-            _position = new Vector2(x, y);
-            transform.name = "Square: " + _position.x + "-" + _position.y;
+            m_maxValue = maxValue;
 
-            if(value >= 0)
+            if (generatedAnswerValue >= 0)
             {
                 CurrentValue = 0;
             }
             else
             {
-                _currentValue = -1;
+                m_currentValue = -1;
             }
 
-            m_button.interactable = value >= 0;
 
-            OnInitialize?.Invoke(_currentValue, _position, new Vector2(maxX, maxY));
+            m_button.interactable = generatedAnswerValue >= 0;
         }
 
         private void OnButtonClickCallback()
         {
             CurrentValue++;
 
-            OnInteract?.Invoke(CurrentValue, false);
+            OnInteract?.Invoke(new LevelSquareInteractEventArgs(CurrentValue, false));
         }
 
         public bool TryGetValue(out sbyte value)
@@ -77,7 +75,8 @@ namespace KronosTech.Levels
             if(CurrentValue != -1)
             {
                 CurrentValue = 0;
-                OnInteract?.Invoke(CurrentValue, true);
+
+                OnInteract?.Invoke(new LevelSquareInteractEventArgs(CurrentValue, true));
             }
         }
     }

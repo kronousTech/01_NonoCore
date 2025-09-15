@@ -5,13 +5,15 @@ namespace KronosTech.Levels
     [Serializable]
     public class LevelData
     {
+        public sbyte MaxPointsPerSquare;
         public sbyte[,] Grid;
 
         private readonly int[] m_rowsAnswers;
         private readonly int[] m_columnsAnswers;
 
-        public LevelData(sbyte[,] grid)
+        public LevelData(sbyte maxPointsPerSquare, sbyte[,] grid)
         {
+            this.MaxPointsPerSquare = maxPointsPerSquare;
             this.Grid = grid;
 
             m_rowsAnswers = GetAnswersRow();
