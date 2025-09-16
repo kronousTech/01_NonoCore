@@ -1,24 +1,19 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Unity.Services.CloudSave;
-using Unity.Services.CloudSave.Models;
-using Unity.Services.Authentication;
-using UnityEngine.Events;
 using System.Threading.Tasks;
+using Unity.Services.Authentication;
+using Unity.Services.CloudSave.Models;
+using UnityEngine;
 
 namespace KronosTech.CloudSave
 {
     /// <summary>
     /// This script has the necessary methods to access and control the CloudSave player's Data.
     /// </summary>
-    public static class CloudSaveManager
+    public static class CloudSaveRequests
     {
-        private static readonly int RetryWaitTime = 1000; //In miliseconds
-        private static readonly string ConnectionErrorMessage = "The request to the Cloud Save service failed - make sure you're connected to an internet connection and try again.";
-
-        public static UnityEvent OnRequestStart = new();
-        public static UnityEvent OnRequestFinish = new();
+        private const int s_retryWaitTime = 1000;
+        private const string s_connectionErrorMessage = "The request to the Cloud Save service failed - make sure you're connected to an internet connection and try again.";
 
         /// <summary>
         /// Clears all the player's data.
@@ -26,13 +21,9 @@ namespace KronosTech.CloudSave
         /// <param name="callback"></param>
         public static async void ClearData(Action<bool> callback)
         {
-            OnRequestStart?.Invoke();
-
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 Debug.LogError("CloudSaveManager.cs: Can't clear data because the player is not logged in.");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(false);
 
@@ -41,21 +32,19 @@ namespace KronosTech.CloudSave
 
             try
             {
-                await CloudSaveService.Instance.Data.Player.DeleteAllAsync();
+                await Unity.Services.CloudSave.CloudSaveService.Instance.Data.Player.DeleteAllAsync();
 
                 Debug.Log("<color=#12a182>CloudSaveManager.cs: User data cleared successfully.</color>");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(true);
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains(ConnectionErrorMessage))
+                if (ex.Message.Contains(s_connectionErrorMessage))
                 {
                     Debug.LogWarning("CloudSaveManager.cs: Connection error deleting user data: " + ex.Message);
 
-                    await Task.Delay(RetryWaitTime);
+                    await Task.Delay(s_retryWaitTime);
 
                     ClearData(callback);
                 }
@@ -63,12 +52,11 @@ namespace KronosTech.CloudSave
                 {
                     Debug.LogError("CloudSaveManager.cs: Error deleting user data: " + ex.Message);
 
-                    OnRequestFinish?.Invoke();
-
                     callback?.Invoke(false);
                 }
             }
         }
+
         /// <summary>
         /// Retrieves a specific value from the player's data.
         /// </summary>
@@ -76,13 +64,9 @@ namespace KronosTech.CloudSave
         /// <param name="callback"></param>
         public static async void RetrieveSpecificData<T>(string key, Action<bool, T> callback)
         {
-            OnRequestStart?.Invoke();
-
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 Debug.LogError("CloudSaveManager.cs: Can't retrieve specific data because the player is not logged in.");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(false, default);
 
@@ -91,13 +75,11 @@ namespace KronosTech.CloudSave
 
             try
             {
-                var data = await CloudSaveService.Instance.Data.Player.LoadAsync(new HashSet<string> { key });
+                var data = await Unity.Services.CloudSave.CloudSaveService.Instance.Data.Player.LoadAsync(new HashSet<string> { key });
 
                 if (data.TryGetValue(key, out var item))
                 {
                     Debug.Log("<color=#12a182>CloudSaveManager.cs: Specific data retrieved successfully.</color>");
-
-                    OnRequestFinish?.Invoke();
 
                     callback?.Invoke(true, item.Value.GetAs<T>());
                 }
@@ -105,27 +87,23 @@ namespace KronosTech.CloudSave
                 {
                     Debug.Log("<color=#12a182>CloudSaveManager.cs: There is no such key as " + key + "!</color>");
 
-                    OnRequestFinish?.Invoke();
-
                     callback?.Invoke(false, default);
                 }
             }
             catch (Exception ex)
             {
                 // Connection error, trying again.
-                if (ex.Message.Contains(ConnectionErrorMessage))
+                if (ex.Message.Contains(s_connectionErrorMessage))
                 {
                     Debug.LogWarning("CloudSaveManager.cs: Connection error retrieving specific data: " + ex.Message);
 
-                    await Task.Delay(RetryWaitTime);
+                    await Task.Delay(s_retryWaitTime);
 
                     RetrieveSpecificData(key, callback);
                 }
                 else
                 {
                     Debug.LogError("CloudSaveManager.cs: Error retrieving specific data: " + ex.Message);
-
-                    OnRequestFinish?.Invoke();
 
                     callback?.Invoke(false, default);
                 }
@@ -137,15 +115,11 @@ namespace KronosTech.CloudSave
         /// <param name="callback"></param>
         public static async void RetrieveAllData(Action<bool, Dictionary<string, Item>> callback)
         {
-            OnRequestStart?.Invoke();
-
             Dictionary<string, Item> data = new Dictionary<string, Item>();
 
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 Debug.LogError("CloudSaveManager.cs: Can't retrieve all of player's data because the player is not logged in.");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(false, null);
 
@@ -154,18 +128,18 @@ namespace KronosTech.CloudSave
 
             try
             {
-                data = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
+                data = await Unity.Services.CloudSave.CloudSaveService.Instance.Data.Player.LoadAllAsync();
 
                 Debug.Log("<color=#12a182>CloudSaveManager.cs: All data loaded successfully.</color>");
             }
             catch (Exception ex)
             {
                 // Connection error, trying again.
-                if (ex.Message.Contains(ConnectionErrorMessage))
+                if (ex.Message.Contains(s_connectionErrorMessage))
                 {
                     Debug.LogWarning("CloudSaveManager.cs: Connection error loading all data: " + ex.Message);
 
-                    await Task.Delay(RetryWaitTime);
+                    await Task.Delay(s_retryWaitTime);
 
                     RetrieveAllData(callback);
                 }
@@ -173,15 +147,11 @@ namespace KronosTech.CloudSave
                 {
                     Debug.LogError("CloudSaveManager.cs: Error loading all data: " + ex.Message);
 
-                    OnRequestFinish?.Invoke();
-
                     callback?.Invoke(false, null);
 
                     return;
                 }
             }
-
-            OnRequestFinish?.Invoke();
 
             callback?.Invoke(true, data);
         }
@@ -194,13 +164,9 @@ namespace KronosTech.CloudSave
         /// <param name="callback"></param>
         public static async void SaveSpecificData<T>(string key, T data, Action<bool> callback)
         {
-            OnRequestStart?.Invoke();
-
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 Debug.LogError("CloudSaveManager.cs: Can't save specific data because the player is not logged in.");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(false);
 
@@ -209,29 +175,25 @@ namespace KronosTech.CloudSave
 
             try
             {
-                await CloudSaveService.Instance.Data.Player.SaveAsync(new Dictionary<string, object> { { key, data } });
+                await Unity.Services.CloudSave.CloudSaveService.Instance.Data.Player.SaveAsync(new Dictionary<string, object> { { key, data } });
 
                 Debug.Log("<color=#12a182>CloudSaveManager.cs: " + key + " data saved successfully.</color>");
-
-                OnRequestFinish?.Invoke();
 
                 callback?.Invoke(true);
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains(ConnectionErrorMessage))
+                if (ex.Message.Contains(s_connectionErrorMessage))
                 {
                     Debug.LogWarning("CloudSaveManager.cs: Connection error saving data: " + ex.Message);
 
-                    await Task.Delay(RetryWaitTime);
+                    await Task.Delay(s_retryWaitTime);
 
                     SaveSpecificData(key, data, callback);
                 }
                 else
                 {
                     Debug.LogError("CloudSaveManager.cs: Error saving data: " + key + " - " + ex.Message);
-
-                    OnRequestFinish?.Invoke();
 
                     callback?.Invoke(false);
                 }

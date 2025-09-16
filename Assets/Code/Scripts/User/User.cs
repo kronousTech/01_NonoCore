@@ -16,12 +16,12 @@ namespace KronosTech
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            Authentication.OnLogin.AddListener(LoadUserCloudData);
+            //Authentication.OnLogin.AddListener(LoadUserCloudData);
         }
 
         private static void LoadUserCloudData()
         {
-            CloudSaveManager.RetrieveAllData((result, data) =>
+            CloudSaveRequests.RetrieveAllData((result, data) =>
             {
                 if (result)
                 {
@@ -34,7 +34,7 @@ namespace KronosTech
 
         public static void SaveProgress(Action<bool> callback)
         {
-            CloudSaveManager.SaveSpecificData(nameof(Progress), Progress, (result) =>
+            CloudSaveRequests.SaveSpecificData(nameof(Progress), Progress, (result) =>
             {
                 if (result)
                 {
