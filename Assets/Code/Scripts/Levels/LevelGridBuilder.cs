@@ -23,7 +23,7 @@ namespace KronosTech.Levels
             m_dataHolder.OnLevelDataChanged -= OnLevelDataChangedCallback;
         }
 
-        private void OnLevelDataChangedCallback(LevelData data)
+        private void OnLevelDataChangedCallback(LevelDataScriptableObject data)
         {
             var gridScreenWidth = m_parent.rect.width;
             var gridScreenHeight = m_parent.rect.height;

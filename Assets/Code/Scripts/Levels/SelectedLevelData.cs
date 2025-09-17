@@ -4,13 +4,13 @@ namespace KronosTech.Levels
 {
     public static class SelectedLevelData
     {
-        private static LevelData Data;
+        private static LevelDataScriptableObject Data;
 
-        public static LevelData GetData()
+        public static LevelDataScriptableObject GetData()
         {
             return Data;
         }
-        public static void SetData(LevelData data)
+        public static void SetData(LevelDataScriptableObject data)
         {
             Data = data;
         }
@@ -18,7 +18,8 @@ namespace KronosTech.Levels
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
-            var data = new LevelData(2, new sbyte[,]
+            var data = new LevelDataScriptableObject();
+            data.Initialize(2, new sbyte[,]
 {
     { +0, -1, +0, +0, +1, +2, +3, +3, -1, +1 },
     { +0, +4, +1, +1, -1, +3, +3, +1, -1, +2 },

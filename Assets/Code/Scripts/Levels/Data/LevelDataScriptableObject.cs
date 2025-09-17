@@ -1,18 +1,22 @@
+using NaughtyAttributes;
 using System;
+using UnityEngine;
 
 namespace KronosTech.Levels
 {
-    [Serializable]
-    public class LevelData
+    public class LevelDataScriptableObject : ScriptableObject
     {
-        public sbyte MaxPointsPerSquare;
-        public sbyte[,] Grid;
+        [Header("Debug")]
+        [ReadOnly] public string ID;
+        [ReadOnly] public sbyte MaxPointsPerSquare;
+        [ReadOnly] public sbyte[,] Grid;
 
-        private readonly int[] m_rowsAnswers;
-        private readonly int[] m_columnsAnswers;
+        private int[] m_rowsAnswers;
+        private int[] m_columnsAnswers;
 
-        public LevelData(sbyte maxPointsPerSquare, sbyte[,] grid)
+        public void Initialize(sbyte maxPointsPerSquare, sbyte[,] grid)
         {
+            this.ID = Guid.NewGuid().ToString("N");
             this.MaxPointsPerSquare = maxPointsPerSquare;
             this.Grid = grid;
 

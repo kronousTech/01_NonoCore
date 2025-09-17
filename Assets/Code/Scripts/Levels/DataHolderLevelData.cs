@@ -5,9 +5,9 @@ namespace KronosTech.Levels
 {
     public class DataHolderLevelData : MonoBehaviour
     {
-        private LevelData m_data;
+        private LevelDataScriptableObject m_data;
 
-        public event Action<LevelData> OnLevelDataChanged;
+        public event Action<LevelDataScriptableObject> OnLevelDataChanged;
 
         private void Start()
         {
